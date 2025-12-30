@@ -11,12 +11,19 @@ connectDB();
 const app = express();
 app.use(cors()); // Enable corss-origin resourse sharing
 
+// Clerk webhook MUST use raw body
+app.post(
+  "/api/clerk",
+  express.raw({ type: "application/json" }),
+  clerkWebhooks
+);
+
 // middleware
 app.use(express.json());
 app.use(clerkMiddleware()); // clerk middleware
 
 // Api to listen to clerk webhooks
-app.use("/api/clerk", clerkWebhooks);
+// app.use("/api/clerk", clerkWebhooks);
 
 
 app.get('/', (req, res) => {
@@ -28,5 +35,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on pott ${PORT}`)
 })
-
-// https://play.svix.com/in/e_6EoLOmMgvZQYEf5soWVSqJtlxI1/
