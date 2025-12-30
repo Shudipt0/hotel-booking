@@ -54,8 +54,6 @@
 
 // export default clerkWebhooks;
 
-
-
 import { Webhook } from "svix";
 import User from "../models/user.js";
 
@@ -76,21 +74,37 @@ const clerkWebhooks = async (req, res) => {
     // ✅ NOW safely read data
     const { type, data } = evt;
 
-    const userData = {
-      _id: data.id,
-      email: data.email_addresses[0].email_address,
-      userName: `${data.first_name ?? ""} ${data.last_name ?? ""}`,
-      image: data.image_url,
-    };
+    // const userData = {
+    //   _id: data.id,
+    //   email: data.email_addresses[0].email_address,
+    //   userName: `${data.first_name ?? ""} ${data.last_name ?? ""}`,
+    //   image: data.image_url,
+    // };
 
     switch (type) {
-      case "user.created":
-        await User.create(userData);
+      case "user.created": {
+        const existingUser = await User.findById(data.id);
+        if (!existingUser) {
+          const userData = {
+            _id: data.id,
+            userName: `${data.first_name ?? ""} ${data.last_name ?? ""}`,
+            email: data.email_addresses[0].email_address,
+            image: data.image_url,
+          };
+          await User.create(userData);
+        }
         break;
+      }
 
-      case "user.updated":
+      case "user.updated": {
+        const userData = {
+          email: data.email_addresses[0].email_address,
+          userName: `${data.first_name ?? ""} ${data.last_name ?? ""}`,
+          image: data.image_url,
+        };
         await User.findByIdAndUpdate(data.id, userData);
         break;
+      }
 
       case "user.deleted":
         await User.findByIdAndDelete(data.id);
