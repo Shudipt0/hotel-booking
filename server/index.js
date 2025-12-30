@@ -18,8 +18,6 @@ app.use(clerkMiddleware()); // clerk middleware
 // Api to listen to clerk webhooks
 app.use("/api/clerk", clerkWebhooks);
 
-// // Clerk webhook route (RAW BODY)
-// app.use("/api/clerk", clerkRoutes);
 
 app.get('/', (req, res) => {
     res.send("api is working")
