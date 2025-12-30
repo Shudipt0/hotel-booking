@@ -3,6 +3,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import express from 'express';
 import connectDB from './config/db.js';
+import clerkWebhooks from './controllers/clerkWebhooks.js';
 
 // connect to mongoose
 connectDB();
@@ -15,7 +16,10 @@ app.use(express.json());
 app.use(clerkMiddleware()); // clerk middleware
 
 // Api to listen to clerk webhooks
-app.use("/api/clerk", clerkMiddleware);
+app.use("/api/clerk", clerkWebhooks);
+
+// // Clerk webhook route (RAW BODY)
+// app.use("/api/clerk", clerkRoutes);
 
 app.get('/', (req, res) => {
     res.send("api is working")
@@ -27,3 +31,4 @@ app.listen(PORT, () => {
     console.log(`Server is running on pott ${PORT}`)
 })
 
+// https://play.svix.com/in/e_6EoLOmMgvZQYEf5soWVSqJtlxI1/
