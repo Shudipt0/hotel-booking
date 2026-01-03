@@ -5,6 +5,7 @@ import express from 'express';
 import connectCloudinary from './config/cloudinary.js';
 import connectDB from './config/db.js';
 import clerkWebhooks from './controllers/clerkWebhooks.js';
+import bookingRouter from './routes/bookingRoute.js';
 import hotelRouter from './routes/hotelRoute.js';
 import roomRouter from './routes/roomRoute.js';
 import userRouter from './routes/userRoute.js';
@@ -38,6 +39,7 @@ app.get('/', (req, res) => {
 app.use('/api/v1/user', userRouter)
 app.use('/api/v1/hotels', hotelRouter)
 app.use('/api/v1/rooms', roomRouter)
+app.use('/api/v1/bookings', bookingRouter)
 
 const PORT = process.env.PORT || 5000;
 
