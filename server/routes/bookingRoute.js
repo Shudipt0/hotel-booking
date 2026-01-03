@@ -1,0 +1,12 @@
+import express from "express";
+import { checkRoom, createBooking, getHotelBookings, getUserBookings } from "../controllers/bookingController.js";
+import { protect } from "../middlewares/authMiddleware.js";
+
+const bookingRouter = express.Router();
+
+bookingRouter.post('/check-availability', checkRoom);
+bookingRouter.post('/book', protect, createBooking);
+bookingRouter.post('/user', protect, getUserBookings);
+bookingRouter.post('/hotel', protect, getHotelBookings);
+
+export default bookingRouter;

@@ -1,7 +1,9 @@
+import { Toaster } from "react-hot-toast";
 import { Route, Routes, useLocation } from "react-router-dom";
 import Footer from "./components/Footer";
 import HotelReg from "./components/HotelReg";
 import Navbar from "./components/Navbar";
+import { useAppContext } from "./context/AppContext";
 import AllRooms from "./pages/AllRooms";
 import Home from "./pages/Home";
 import MyBookings from "./pages/MyBookings";
@@ -13,10 +15,12 @@ import ListRoom from "./pages/admin/ListRoom";
 
 function App() {
   const isDashboardPath = useLocation().pathname.includes("admin");
+  const { showHotelReg } = useAppContext();
   return (
     <div>
+      <Toaster />
       {!isDashboardPath && <Navbar />}
-      {false && <HotelReg />}
+      {showHotelReg && <HotelReg />}
       <div className="min-h-[70vh] ">
         <Routes>
           <Route path="/" element={<Home />} />
