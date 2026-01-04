@@ -27,10 +27,10 @@ const RadioButton = ({ label, selected = false, onChange = () => {} }) => {
   );
 };
 
-const RoomFilter = () => {
-  const [openFilters, setOpenFilters] = useState();
+const RoomFilter = ({ setSearchParams, setSelectedFilters, setSelectedSort, selectedFilters, selectedSort}) => {
+  const [openFilters, setOpenFilters] = useState(false);
 
-  const roomTypes = ["single bed", "double bed", "luxury room", "family suite"];
+  const roomTypes = ["Single Bed", "Double Bed", "Luxury Room", "Family Suite"];
 
   const priceRange = [
     "0 to 500",
@@ -43,7 +43,35 @@ const RoomFilter = () => {
     "Price Low to High",
     "Price High to Low",
     "Newest First",
-  ];
+  ];  
+
+  //  Handle changes for filters and sorting
+  const handleFilterChange = (checked, value, type) => {
+    setSelectedFilters((prev) => {
+      const updatedFilters = {...prev};
+      if(checked){
+        updatedFilters[type].push(value);
+      }else{
+        updatedFilters[type] = updatedFilters[type].filter(item => item !== value)
+      }
+      return updatedFilters;
+    })
+  }
+
+  const handleSortChange = (sortOptions) => {
+    setSelectedSort(sortOptions)
+  }
+
+ 
+  // clear all filters
+  const clearFilters = () => {
+    setSelectedFilters({
+      roomTypes: [],
+      priceRange: [],
+    });
+    setSelectedSort('');
+    setSearchParams({});
+  }
 
   return (
     <div className="bg-white w-80 border border-gray-300 text-gray-600 max-lg:mb-8 lg:mt-16 ">
@@ -72,19 +100,22 @@ const RoomFilter = () => {
         <div className="px-5 pt-5">
           <p className="font-medium text-gray-800 pb-2">Popular filter</p>
           {roomTypes.map((room, index) => (
-            <CheckBox key={index} label={room} />
+            <CheckBox key={index} label={room} selected={selectedFilters.roomTypes.includes(room)}
+            onChange={(checked) => handleFilterChange(checked, room, 'roomTypes')} />
           ))}
         </div>
         <div className="px-5 pt-5">
           <p className="font-medium text-gray-800 pb-2">Price Range</p>
           {priceRange.map((range, index) => (
-            <CheckBox key={index} label={`$ ${range}`} />
+            <CheckBox key={index} label={`$ ${range}`} selected={selectedFilters.priceRange.includes(range)}
+            onChange={(checked) => handleFilterChange(checked, range, 'priceRange')}/>
           ))}
         </div>
         <div className="px-5 pt-5 pb-7">
           <p className="font-medium text-gray-800 pb-2">Sort By</p>
           {sortOptions.map((option, index) => (
-            <RadioButton key={index} label={option} />
+            <RadioButton key={index} label={option} selected={selectedSort === option} 
+            onChange={()=> handleSortChange(option)} />
           ))}
         </div>
       </div>
