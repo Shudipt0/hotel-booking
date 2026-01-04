@@ -2,7 +2,8 @@ import { useClerk, UserButton } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { assets } from "../assets/assets";
-import { useAppContext } from "../context/AppContext";
+import { useAppContext } from "../context/useAppContext";
+
 
 const BookIcon = () => (
   <svg
@@ -94,7 +95,7 @@ const Navbar = () => {
         {user && (
           <button
             onClick={() =>
-              isOwner ? navigate("/dashboard") : setShowHotelReg(true)
+              isOwner ? navigate("/admin") : setShowHotelReg(true)
             }
             className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${
               isScrolled ? "text-black" : "text-white"
@@ -181,7 +182,7 @@ const Navbar = () => {
         {user && (
           <button
             onClick={() =>
-              isOwner ? navigate("/dashboard") : setShowHotelReg(true)
+              isOwner ? navigate("/admin") : setShowHotelReg(true)
             }
             className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all"
           >
