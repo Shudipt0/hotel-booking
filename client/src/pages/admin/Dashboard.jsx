@@ -1,9 +1,38 @@
-import { useState } from "react";
-import { assets, dashboardDummyData } from "../../assets/assets";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { assets } from "../../assets/assets";
 import Title from "../../components/Title";
+import { useAppContext } from "../../context/useAppContext";
 
 const Dashboard = () => {
-  const [dashboardData, setDashboardData] = useState(dashboardDummyData);
+  const { currency, user, getToken, axios } = useAppContext();
+  const [dashboardData, setDashboardData] = useState({
+    bookings: [],
+    totalBookings: 0,
+    totalRevenue: 0,
+  });
+
+  const fetchDashboardData = async () => {
+    try {
+      const { data } = await axios.get("/api/v1/hotels", {
+        headers: { Authorization: `Bearer ${await getToken()}` },
+      });
+      if (data.success) {
+        setDashboardData(data.dashboardData);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user]);
+
   return (
     <div>
       <Title

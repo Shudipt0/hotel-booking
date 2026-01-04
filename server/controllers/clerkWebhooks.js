@@ -91,7 +91,7 @@ const clerkWebhooks = async (req, res) => {
             email: data.email_addresses[0].email_address,
             image: data.image_url,
           };
-          console.log("Creating user:", data.id, data.email_addresses, data.first_name, data.last_name);
+          // console.log("Creating user:", data.id, data.email_addresses, data.first_name, data.last_name);
           await User.create(userData);
         }
         break;
