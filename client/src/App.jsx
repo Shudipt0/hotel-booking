@@ -3,7 +3,6 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import Footer from "./components/Footer";
 import HotelReg from "./components/HotelReg";
 import Navbar from "./components/Navbar";
-import { useAppContext } from "./context/AppContext";
 import AllRooms from "./pages/AllRooms";
 import Home from "./pages/Home";
 import MyBookings from "./pages/MyBookings";
@@ -12,6 +11,7 @@ import AddRoom from "./pages/admin/AddRoom";
 import Dashboard from "./pages/admin/Dashboard";
 import Layout from "./pages/admin/Layout";
 import ListRoom from "./pages/admin/ListRoom";
+import { useAppContext } from "./context/useAppContext";
 
 function App() {
   const isDashboardPath = useLocation().pathname.includes("admin");
