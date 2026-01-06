@@ -1,14 +1,43 @@
+import { useState } from "react";
 import { assets, cities } from "../assets/assets";
+import { useAppContext } from "../context/useAppContext";
 
 const HeroForm = () => {
+  const { navigate, getToken, axios, setSearchCities } = useAppContext();
+  const [destination, setDestination] = useState();
+
+  const onSearch = async (e) => {
+    e.preventDefault();
+    navigate(`/rooms?destination=${destination}`);
+    // call api to save recent searched city
+    await axios.post(
+      "/api/v1/user/store-recent-search",
+      { recentSeachCity: destination },
+      { headers: { Authorization: `Bearer ${await getToken()}` } }
+    );
+
+    // add destination to searchedCities max 3 recent search cities
+    setSearchCities((prev) => {
+      const updateSearchCities = [...prev, destination];
+      if (updateSearchCities.length > 3) {
+        updateSearchCities.shift();
+      }
+      return updateSearchCities;
+    });
+  };
   return (
-    <form className="bg-white text-gray-500 rounded-lg px-6 py-4 mt-8 flex flex-col md:flex-row max-md:items-start gap-4 max-md:mx-auto">
+    <form
+      onSubmit={onSearch}
+      className="bg-white text-gray-500 rounded-lg px-6 py-4 mt-8 flex flex-col md:flex-row max-md:items-start gap-4 max-md:mx-auto"
+    >
       <div>
         <div className="flex items-center gap-2">
           <img src={assets.calenderIcon} alt="" className="h-4" />
           <label htmlFor="destinationInput">Destination</label>
         </div>
         <input
+          onChange={(e) => setDestination(e.target.value)}
+          value={destination}
           list="destinations"
           id="destinationInput"
           type="text"

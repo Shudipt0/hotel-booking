@@ -1,34 +1,38 @@
+import { useEffect, useState } from "react";
 import { useAppContext } from "../context/useAppContext";
 import HotelCard from "./HotelCard";
 import Title from "./Title";
 
-const FeaturedHotel = () => {
-  const { rooms, navigate } = useAppContext();
+const RecomenedHotels = () => {
+  const { rooms, searchCities } = useAppContext();
+  const [recommended, setRecomended] = useState([]);
+
+  const filterHotels = () => {
+    const filteredhotels = rooms
+      .slice()
+      .filter((room) => searchCities.includes(room.hotel.city));
+    setRecomended(filteredhotels);
+  };
+
+  useEffect(() => {
+    filterHotels();
+  }, [rooms, searchCities]);
 
   return (
-    rooms.length > 0 && (
+    recommended.length > 0 && (
       <div className="flex flex-col items-center px-6 md:px-16 lg:px-24 bg-slate-50 py-20">
         <Title
-          title="Featured Hotels"
+          title="Recommended Hotels"
           subTitle="Discover our handpicked selection of exceptional properties around the world, offering unparalleled luxury and unforgettable experiences"
         />
         <div className="flex flex-wrap items-center justify-center gap-6 mt-20">
-          {rooms.slice(0, 4).map((room, index) => (
+          {recommended.slice(0, 4).map((room, index) => (
             <HotelCard key={room._id} room={room} index={index} />
           ))}
         </div>
-        <button
-          onClick={() => {
-            navigate("/rooms");
-            scrollTo(0, 0);
-          }}
-          className="my-16 px-4 py-2 text-sm font-medium border border-gray-300 rounded bg-white hover:bg-gray-50 transition-all cursor-pointer "
-        >
-          View All Hotels
-        </button>
       </div>
     )
   );
 };
 
-export default FeaturedHotel;
+export default RecomenedHotels;
