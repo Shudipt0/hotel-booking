@@ -67,7 +67,7 @@ const RoomDetails = () => {
             guests,
             paymentMethod: "Pay At Hotel",
           },
-          { headers: { Authorization: `Bearer $${await getToken()}` } }
+          { headers: { Authorization: `Bearer ${await getToken()}` } }
         );
         if (data.success) {
           toast.success(data.message);

@@ -1,3 +1,4 @@
+import transporter from "../config/nodeMailer.js";
 import Booking from "../models/booking.js";
 import Hotel from "../models/hotel.js";
 import Room from "../models/room.js";
@@ -69,6 +70,29 @@ export const createBooking = async (req, res) => {
       checkOutDate,
       totalPrice,
     });
+
+    // use nodemailer to send email
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: req.user.email,
+      subject: "Hotel Booking Details",
+      html: `
+           <h2>Your Booking Details</h2>
+           <p>Dear ${req.user.userName},</p>
+           <p>Thank you for your booking! Here are your details:</p>
+           <ul>
+              <li><strong>Booking ID:</strong> ${booking._id}</li>
+              <li><strong>Hotel Name:</strong> ${roomData.hotel.name}</li>
+              <li><strong>Location:</strong> ${roomData.hotel.address}</li>
+              <li><strong>Date:</strong> ${booking.checkInDate.toDateString()}</li>
+              <li><strong>Booking Amount:</strong>$ ${booking.totalPrice} /per night</li>
+           </ul>
+           <p>We look forward to welcoming you!</p>
+           <p>If you need to make any changes, fell free to contact us.</p>
+      `
+    }
+
+    await transporter.sendMail(mailOptions);
 
     res.json({ success: true, message: "Booking created successfully" });
   } catch (error) {
