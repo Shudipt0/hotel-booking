@@ -12,7 +12,7 @@ import userRouter from './routes/userRoute.js';
 import { stripeWebhooks } from './controllers/stripeWebhooks.js';
 
 // connect to mongoose
-connectDB();
+await connectDB();
 connectCloudinary();
 
 const app = express();
