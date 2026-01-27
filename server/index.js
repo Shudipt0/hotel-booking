@@ -9,6 +9,7 @@ import bookingRouter from './routes/bookingRoute.js';
 import hotelRouter from './routes/hotelRoute.js';
 import roomRouter from './routes/roomRoute.js';
 import userRouter from './routes/userRoute.js';
+import { stripeWebhooks } from './controllers/stripeWebhooks.js';
 
 // connect to mongoose
 connectDB();
@@ -22,6 +23,13 @@ app.post(
   "/api/clerk",
   express.raw({ type: "application/json" }),
   clerkWebhooks
+);
+
+// Api to listen to stripe webhooks
+app.post(
+  "/api/v1/stripe",
+  express.raw({ type: "application/json" }),
+  stripeWebhooks
 );
 
 // middleware

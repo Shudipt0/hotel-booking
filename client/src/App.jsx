@@ -12,6 +12,7 @@ import Dashboard from "./pages/admin/Dashboard";
 import Layout from "./pages/admin/Layout";
 import ListRoom from "./pages/admin/ListRoom";
 import { useAppContext } from "./context/useAppContext";
+import Loader from "./components/Loader";
 
 function App() {
   const isDashboardPath = useLocation().pathname.includes("admin");
@@ -27,6 +28,7 @@ function App() {
           <Route path="/rooms" element={<AllRooms />} />
           <Route path="/rooms/:id" element={<RoomDetails />} />
           <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/loader/:nextUrl" element={<Loader />} />
           <Route path="/admin" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="add-room" element={<AddRoom />} />
