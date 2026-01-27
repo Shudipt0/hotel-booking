@@ -168,7 +168,7 @@ export const stripePayment = async (req, res) => {
       success_url: `${origin}/loader/my-bookings`,
       cancel_url: `${origin}/my-bookings`,
       metadata:{
-        bookingId,
+        bookingId: bookingId.toString(),
       }
     });
 
