@@ -27,7 +27,7 @@ app.post(
 
 // Api to listen to stripe webhooks
 app.post(
-  "/api/v1/stripe",
+  "/api/stripe",
   express.raw({ type: "application/json" }),
   stripeWebhooks
 );
