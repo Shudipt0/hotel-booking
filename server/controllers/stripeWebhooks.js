@@ -1,6 +1,6 @@
-import stripe from "stripe";
-import Booking from "../models/booking.js";
-import connectDB from "../config/db.js";
+// import stripe from "stripe";
+// import Booking from "../models/booking.js";
+// import connectDB from "../config/db.js";
 
 // api to handle stripe web hooks
 
@@ -57,6 +57,10 @@ import connectDB from "../config/db.js";
 //   res.json({ received: true });
 // };
 
+import stripe from "stripe";
+import Booking from "../models/booking.js";
+import connectDB from "../config/db.js";
+
 let cachedDB = null;
 
 const connectDBOnce = async () => {
@@ -65,13 +69,15 @@ const connectDBOnce = async () => {
   return cachedDB;
 };
 
-export const stripeWebhooks = async (req, res) => {
-  await connectDBOnce(); // ensure DB is connected for this request
+export default async function handler(req, res) {
+  if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
+
+  await connectDBOnce();
 
   const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
   const sig = req.headers["stripe-signature"];
-  let event;
 
+  let event;
   try {
     event = stripeInstance.webhooks.constructEvent(
       req.body,
@@ -80,42 +86,31 @@ export const stripeWebhooks = async (req, res) => {
     );
     console.log("✅ Stripe webhook verified");
   } catch (err) {
-    console.error("❌ Stripe webhook signature failed:", err.message);
+    console.error("❌ Webhook signature failed:", err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  try {
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object;
-      const bookingId = session.metadata?.bookingId;
-      console.log("Session metadata:", session.metadata);
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+    const bookingId = session.metadata?.bookingId;
+    console.log("Session metadata:", session.metadata);
 
-      if (!bookingId) {
-        console.error("Missing bookingId in metadata");
-        return res.status(400).json({ error: "Missing bookingId" });
-      }
-
-      const booking = await Booking.findById(bookingId);
-      if (!booking) {
-        console.error("Booking not found for ID:", bookingId);
-        return res.status(404).json({ error: "Booking not found" });
-      }
-
-      const updated = await Booking.findByIdAndUpdate(
-        bookingId,
-        { isPaid: true, paymentMethod: "Stripe", status: "confirm" },
-        { new: true }
-      );
-
-      console.log("✅ Booking updated:", updated);
-      return res.json({ received: true });
+    if (!bookingId) {
+      console.error("Missing bookingId in metadata");
+      return res.status(400).json({ error: "Missing bookingId" });
     }
 
+    const updated = await Booking.findByIdAndUpdate(
+      bookingId,
+      { isPaid: true, paymentMethod: "Stripe", status: "confirm" },
+      { new: true }
+    );
+
+    console.log("✅ Booking updated:", updated);
+  } else {
     console.log("⚠️ Unhandled event type:", event.type);
-    return res.json({ received: true });
-  } catch (err) {
-    console.error("❌ Webhook DB error:", err);
-    return res.status(500).json({ error: "Database update failed" });
   }
-};
+
+  return res.json({ received: true });
+}
 
