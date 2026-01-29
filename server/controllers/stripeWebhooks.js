@@ -1,5 +1,6 @@
 import stripe from "stripe";
 import Booking from "../models/booking.js";
+import connectDB from "../config/db.js";
 
 // api to handle stripe web hooks
 
@@ -56,7 +57,17 @@ import Booking from "../models/booking.js";
 //   res.json({ received: true });
 // };
 
+let cachedDB = null;
+
+const connectDBOnce = async () => {
+  if (cachedDB) return cachedDB;
+  cachedDB = await connectDB();
+  return cachedDB;
+};
+
 export const stripeWebhooks = async (req, res) => {
+  await connectDBOnce(); // ensure DB is connected for this request
+
   const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
   const sig = req.headers["stripe-signature"];
   let event;
@@ -74,29 +85,37 @@ export const stripeWebhooks = async (req, res) => {
   }
 
   try {
-    console.log("Event type:", event.type);
-    const session = event.data.object;
-    console.log("Session metadata:", session.metadata);
-
     if (event.type === "checkout.session.completed") {
-      const bookingId = session.metadata.bookingId;
+      const session = event.data.object;
+      const bookingId = session.metadata?.bookingId;
+      console.log("Session metadata:", session.metadata);
+
       if (!bookingId) {
         console.error("Missing bookingId in metadata");
         return res.status(400).json({ error: "Missing bookingId" });
       }
 
-      const updated = await Booking.findByIdAndUpdate(bookingId, {
-        isPaid: true,
-        paymentMethod: "Stripe",
-        status: "confirm",
-      }, { new: true });
+      const booking = await Booking.findById(bookingId);
+      if (!booking) {
+        console.error("Booking not found for ID:", bookingId);
+        return res.status(404).json({ error: "Booking not found" });
+      }
 
-      console.log("Updated booking:", updated);
+      const updated = await Booking.findByIdAndUpdate(
+        bookingId,
+        { isPaid: true, paymentMethod: "Stripe", status: "confirm" },
+        { new: true }
+      );
+
+      console.log("✅ Booking updated:", updated);
+      return res.json({ received: true });
     }
 
-    res.json({ received: true });
+    console.log("⚠️ Unhandled event type:", event.type);
+    return res.json({ received: true });
   } catch (err) {
     console.error("❌ Webhook DB error:", err);
-    res.status(500).json({ error: "Database update failed" });
+    return res.status(500).json({ error: "Database update failed" });
   }
 };
+
