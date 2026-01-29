@@ -141,11 +141,15 @@ res.json({success: false, message: error.message})
 export const stripePayment = async (req, res) => {
   try{
      const { bookingId } = req.body;
+    //  console.log("Booking ID:", bookingId);
 
      const booking = await Booking.findById(bookingId);
+    //  console.log(booking);
      const roomData = await Room.findById(booking.room).populate('hotel');
      const totalPrice = booking.totalPrice;
-     const {origin} = req.headers;
+    //  const {origin} = req.headers;
+    const origin = process.env.FRONTEND_URL;
+        // console.log("Origin header:", origin);
 
      const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -175,7 +179,7 @@ export const stripePayment = async (req, res) => {
     res.json({ success: true, url: session.url });
 
   } catch(error) {
-    res.json({ success: false, message: "Payment Failed" });
+    res.json({ success: false, message: error.message||"Payment Failed"});
 
   }
 }

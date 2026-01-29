@@ -16,14 +16,6 @@ await connectDB();
 connectCloudinary();
 
 const app = express();
-app.use(cors()); // Enable corss-origin resourse sharing
-
-// Clerk webhook MUST use raw body
-app.post(
-  "/api/clerk",
-  express.raw({ type: "application/json" }),
-  clerkWebhooks
-);
 
 // Api to listen to stripe webhooks
 app.post(
@@ -32,7 +24,16 @@ app.post(
   stripeWebhooks
 );
 
+// Clerk webhook MUST use raw body
+app.post(
+  "/api/clerk",
+  express.raw({ type: "application/json" }),
+  clerkWebhooks
+);
+
+
 // middleware
+app.use(cors({origin: "https://hotel-booking-frontend-xi-hazel.vercel.app"}));
 app.use(express.json());
 app.use(clerkMiddleware()); // clerk middleware
 
