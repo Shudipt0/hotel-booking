@@ -35,6 +35,7 @@ app.post(
 
 // middleware
 app.use(cors({origin: "https://hotel-booking-frontend-xi-hazel.vercel.app"}));
+// app.use(cors());
 app.use(express.json());
 app.use(clerkMiddleware()); // clerk middleware
 
