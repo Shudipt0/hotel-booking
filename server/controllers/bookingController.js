@@ -147,8 +147,8 @@ export const stripePayment = async (req, res) => {
     //  console.log(booking);
      const roomData = await Room.findById(booking.room).populate('hotel');
      const totalPrice = booking.totalPrice;
-    //  const {origin} = req.headers;
-    const origin = process.env.FRONTEND_URL;
+     const {origin} = req.headers;
+    // const origin = process.env.FRONTEND_URL;
         // console.log("Origin header:", origin);
 
      const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
