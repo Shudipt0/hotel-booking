@@ -1,16 +1,15 @@
-import { clerkMiddleware } from '@clerk/express';
-import cors from 'cors';
-import 'dotenv/config';
-import express from 'express';
-import connectCloudinary from './config/cloudinary.js';
-import connectDB from './config/db.js';
-import clerkWebhooks from './controllers/clerkWebhooks.js';
-import bookingRouter from './routes/bookingRoute.js';
-import hotelRouter from './routes/hotelRoute.js';
-import roomRouter from './routes/roomRoute.js';
-import userRouter from './routes/userRoute.js';
-import { stripeWebhooks } from './controllers/stripeWebhooks.js';
-
+import { clerkMiddleware } from "@clerk/express";
+import cors from "cors";
+import "dotenv/config";
+import express from "express";
+import connectCloudinary from "./config/cloudinary.js";
+import connectDB from "./config/db.js";
+import clerkWebhooks from "./controllers/clerkWebhooks.js";
+import bookingRouter from "./routes/bookingRoute.js";
+import hotelRouter from "./routes/hotelRoute.js";
+import roomRouter from "./routes/roomRoute.js";
+import userRouter from "./routes/userRoute.js";
+import { stripeWebhooks } from "./controllers/stripeWebhooks.js";
 
 // connect to mongoose
 await connectDB();
@@ -22,38 +21,36 @@ const app = express();
 app.post(
   "/api/stripe",
   express.raw({ type: "application/json" }),
-  stripeWebhooks
+  stripeWebhooks,
 );
 
 // Clerk webhook MUST use raw body
 app.post(
   "/api/clerk",
   express.raw({ type: "application/json" }),
-  clerkWebhooks
+  clerkWebhooks,
 );
 
-
 // middleware
-app.use(cors({origin: "https://hotel-booking-frontend-xi-hazel.vercel.app"}));
-// app.use(cors());
+app.use(cors({ origin: "https://hotel-booking-frontend-xi-hazel.vercel.app" }));
+// app.use(cors({origin: "http://localhost:5173"}));
 app.use(express.json());
 app.use(clerkMiddleware()); // clerk middleware
 
 // Api to listen to clerk webhooks
 // app.use("/api/clerk", clerkWebhooks);
 
+app.get("/", (req, res) => {
+  res.send("api is working");
+});
 
-app.get('/', (req, res) => {
-    res.send("api is working")
-})
-
-app.use('/api/v1/user', userRouter)
-app.use('/api/v1/hotels', hotelRouter)
-app.use('/api/v1/rooms', roomRouter)
-app.use('/api/v1/bookings', bookingRouter)
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/hotels", hotelRouter);
+app.use("/api/v1/rooms", roomRouter);
+app.use("/api/v1/bookings", bookingRouter);
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`Server is running on pott ${PORT}`)
-})
+  console.log(`Server is running on pott ${PORT}`);
+});

@@ -59,6 +59,7 @@ import User from "../models/user.js";
 
 const clerkWebhooks = async (req, res) => {
   try {
+    console.log("🔥 CLERK WEBHOOK HIT");
     const payload = req.body; // Buffer
     const headers = {
       "svix-id": req.headers["svix-id"],
